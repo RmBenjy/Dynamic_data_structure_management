@@ -10,107 +10,107 @@ class point
 {
 		float x, y;
 		char color[30];
-		point* suiv;
-		point* prec;
+		point *next;
+		point *previous;
 	public:
-		point(float a=1, float b=1, char  *c="") {x=a; y=b; strcpy(color,c); suiv=NULL; prec=NULL;}
+		point(float a = 1, float b = 1, char  *c = "") {x = a; y = b; strcpy(color,c); next = NULL; previous = NULL;}
 		friend ostream & operator<<(ostream &o, point &p);
-		friend class liste;
+		friend class list;
 };
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-class liste
+class list
 {
-    point *debut;
-    point *courant;
+    point *start;
+    point *current;
 
 public:
-    liste(){ debut=NULL; courant=debut; }
-    ~liste(){ }
-    void ajouter(float a, float b, char* c);
-    void supprimer(float a, float b);
-    void modifier(float a, float b);
-    void visualiser(int pos);
-    void afficher();
+    list(){ start = NULL; current = start; }
+    ~list(){ }
+    void add_point(float a, float b, char* c);
+    void modify_point(float a, float b);
+    void delete_point(float a, float b);
+    void show_point(int pos);
+    void show();
 
 };
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-void liste::ajouter(float a, float b, char* c)
+void list::add_point(float a, float b, char* c)
 {
-    point* p=new point(a,b,c);
-    if(debut==NULL)
-        debut=p;
+    point* p = new point(a,b,c);
+    if(start == NULL)
+        start = p;
     else{
-        courant=debut;
-        while(courant->suiv!=NULL && (courant->x!=a && courant->y!=b)){
-            courant=courant->suiv;
+        current = start;
+        while(current->next != NULL && (current->x != a && current->y != b)){
+            current = current->next;
         }
-        if (courant->x==a && courant->y==b )
-            {cout<<"Un point ne peut pas avoir plusieurs couleurs."<<endl;}
-        else {courant->suiv=p;
-        p->prec=courant;}
+        if (current->x == a && current->y == b )
+            {cout<<"A point cannot have multiple colors."<<endl;}
+        else {current->next = p;
+        p->previous = current;}
 
     }
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-void liste::modifier(float a, float b)
+void list::modify_point(float a, float b)
 {
-    if(debut==NULL)
-       cout << "La liste est vide." << endl;
+    if(start == NULL)
+       cout << "The list is empty." << endl;
     else
     {
-        courant = debut;
-        char couleur[30];
-        while (courant!=NULL && (courant->x!=a || courant->y!=b))
-        {courant=courant->suiv;}
+        current = start;
+        char new_color[30];
+        while (current != NULL && (current->x != a || current->y != b))
+        {current = current->next;}
 
-    if (courant==NULL)
-            cout << "Point inexistant." << endl;
+    if (current == NULL)
+            cout << "Non-existent point." << endl;
 
     else{
-            cout << "Entrez la nouvelle couleur du point que vous souhaitez modifier : ";getchar(); fgets(couleur,30,stdin);
-            strcpy(courant->color,couleur);
+            cout << "Enter the new color of the point you want to change : "; getchar(); fgets(new_color,30,stdin);
+            strcpy(current->color, new_color);
         }
     }
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-void liste::supprimer(float a, float b)
+void list::delete_point(float a, float b)
 {
-    if(debut==NULL)
-        cout<<"Liste vide."<<endl;
+    if(start == NULL)
+        cout<<"Empty list."<<endl;
     else
     {
-        courant=debut;
-        while(courant!=NULL && (courant->x!=a || courant->y!=b) ){
-            courant=courant->suiv;
+        current = start;
+        while(current != NULL && (current->x != a || current->y != b) ){
+            current = current->next;
         }
-        if (courant==NULL)
-            cout<<"Point inexistant." << endl;
+        if (current == NULL)
+            cout<<"Non-existent point." << endl;
 
-        //Cas d'un seul point dans la liste
-        if (courant->suiv==NULL && courant->prec==NULL)
-            debut=NULL;
+        // Case of a single point in the list
+        if (current->next == NULL && current->previous == NULL)
+            start = NULL;
 
-        //Cas du point étant en début de liste
-        else if (courant->prec==NULL){
-            debut=courant->suiv;
-            courant->suiv->prec=NULL;}
+        // Case of a point being at the start of the list
+        else if (current->previous == NULL){
+            start = current->next;
+            current->next->previous = NULL;}
 
-        //Cas du point étant en fin de liste
-        else if(courant->suiv==NULL)
-            courant->prec->suiv=NULL;
+        // Case of a point being at the end of the list
+        else if(current->next == NULL)
+            current->previous->next = NULL;
         else{
-            courant->prec->suiv=courant->suiv;
-            courant->suiv->prec=courant->prec;
+            current->previous->next = current->next;
+            current->next->previous = current->previous;
         }
-         delete courant;
+         delete current;
 
     }
 
@@ -118,32 +118,32 @@ void liste::supprimer(float a, float b)
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-void liste::visualiser(int pos)
+void list::show_point(int pos)
 {
     if(pos<0)
-        cout<<"Erreur:Position inexistante."<<endl;
-    if (debut==NULL)
-        cout << "La liste est vide." << endl;
+        cout<<"Error: Position does not exist."<<endl;
+    if (start == NULL)
+        cout << "Empty list." << endl;
     int i=1;
-    courant=debut;
-    while (courant!=NULL && i<pos)
-        {courant=courant->suiv;
+    current = start;
+    while (current != NULL && i<pos)
+        {current = current->next;
         i++;}
-    if (courant==NULL)
-        cout<<"Point inexistant"<<endl;
-    cout<<*courant<<endl;
+    if (current == NULL)
+        cout<<"Non-existent point."<<endl;
+    cout<<*current<<endl;
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-void liste::afficher()
+void list::show()
 {
-    if (debut==NULL)
-        cout << "La liste est vide." << endl;
-    courant=debut;
-    while(courant!=NULL){
-            cout<<*courant<<endl;
-            courant=courant->suiv;
+    if (start == NULL)
+        cout << "Empty list." << endl;
+    current = start;
+    while(current != NULL){
+            cout<<*current<<endl;
+            current = current->next;
  }
 }
 
@@ -152,9 +152,9 @@ void liste::afficher()
 ostream & operator<<(ostream &o, point &p)
 {
 	o.setf(ios::left,ios::adjustfield);
-	o<<"Coordonnee X du point : "; 	o.width(15); o<<p.x;
-	o<<"Coordonnee Y du point : "; 	o.width(15); o<<p.y;
-	o<<"De couleur :"; 		o.width(15); o<<p.color; cout<<endl;
+	o<<"X coordinate of the point : "; 	o.width(15); o<<p.x;
+	o<<"Y coordinate of the point : "; 	o.width(15); o<<p.y;
+	o<<"Color :"; 		o.width(15); o<<p.color; cout<<endl;
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -164,35 +164,35 @@ main()
     int i,pos;
     float a,b;
     char couleur[30];
-    liste l;
+    list l;
     cout<<"*************WELCOME*************"<<endl;
     do {
-                cout<<"Choisir une option :"<<endl;
-                cout<<"1: Ajouter un point."<<endl;
-                cout<<"2: Supprimer un point."<<endl;
-                cout<<"3: Modifier un point."<<endl;
-                cout<<"4: Visualiser un point."<<endl;
-                cout<<"5: Visualiser toutes les elements de la liste."<<endl;
-                cout<<"6: Quittez."<<endl;
-                cin>>i;getchar();
+               cout<<"Choose an option:"<<endl;
+                 cout<<"1: Add a point."<<endl;
+                 cout<<"2: Delete a point."<<endl;
+                 cout<<"3: Modify a point."<<endl;
+                 cout<<"4: View a point."<<endl;
+                 cout<<"5: Display all elements in the list."<<endl;
+                 cout<<"6: Exit."<<endl;
+                cin>>i; getchar();
                 switch(i){
-                case 1: {cout<<"Entrer X : "<<endl;cin>>a;
-                cout<<"Entrer Y : "<<endl;cin>>b;
-                cout<<"Entrer la couleur : "<<endl;getchar();fgets(couleur,30,stdin);
-                l.ajouter(a,b,couleur);break;}
+                case 1: {cout<<"Enter X : "<<endl; cin>>a;
+                cout<<"Enter Y : "<<endl; cin>>b;
+                cout<<"Enter color : "<<endl; getchar(); fgets(couleur,30,stdin);
+                l.add_point(a,b,couleur); break;}
 
-                case 2: {cout<<"Entrer X : "<<endl;cin>>a;
-                cout<<"Entrer Y : "<<endl;cin>>b;
-                l.supprimer(a,b);break;}
+                case 2: {cout<<"Enter X : "<<endl; cin>>a;
+                cout<<"Enter Y : "<<endl; cin>>b;
+                l.delete_point(a,b); break;}
 
-                case 3: {cout<<"Entrer X : "<<endl;cin>>a;
-                cout<<"Entrer Y : "<<endl;cin>>b;
-                l.modifier(a,b);break;}
+                case 3: {cout<<"Enter X : "<<endl; cin>>a;
+                cout<<"Enter Y : "<<endl; cin>>b;
+                l.modify_point(a,b); break;}
 
-                case 4: {cout<<"Entrer la position : "<<endl;cin>>pos;
-                l.visualiser(pos);break;}
+                case 4: {cout<<"Enter position : "<<endl; cin>>pos;
+                l.show_point(pos); break;}
 
-                case 5: {l.afficher();break;}
+                case 5: {l.show(); break;}
 
                 default: break;
 
